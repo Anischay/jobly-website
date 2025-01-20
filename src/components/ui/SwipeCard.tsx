@@ -8,83 +8,12 @@ import { CandidateProfile, CompanyProfile } from '../../types/profile';
 interface SwipeCardProps {
   type: 'job' | 'candidate';
   onSwipe: (direction: 'left' | 'right') => void;
+  profile: CandidateProfile | CompanyProfile;
 }
 
-const sampleCandidates: CandidateProfile[] = [
-  {
-    name: "Sarah Chen",
-    title: "Senior Full Stack Developer",
-    avatar: "/avatars/sarah.jpg",
-    location: "San Francisco, CA",
-    bio: "Passionate about building scalable web applications with modern technologies. 8+ years of experience in full-stack development.",
-    skills: ["React", "Node.js", "TypeScript", "AWS", "MongoDB", "GraphQL"],
-    videoIntro: {
-      url: "/videos/sarah-intro.mp4",
-      thumbnail: "/videos/sarah-thumbnail.jpg"
-    },
-    resume: {
-      url: "/resumes/sarah-chen-resume.pdf",
-      preview: "/resumes/sarah-chen-preview.jpg"
-    },
-    projects: [
-      {
-        name: "E-commerce Platform",
-        description: "Built a scalable e-commerce platform serving 100k+ monthly users",
-        technologies: ["Next.js", "Node.js", "PostgreSQL"],
-        link: "https://github.com/sarahchen/ecommerce"
-      }
-    ],
-    socialLinks: {
-      github: "https://github.com/sarahchen",
-      linkedin: "https://linkedin.com/in/sarahchen",
-      twitter: "https://twitter.com/sarahchen",
-      website: "https://sarahchen.dev"
-    }
-  }
-];
-
-const sampleCompanies: CompanyProfile[] = [
-  {
-    name: "Innovate AI",
-    logo: "/logos/innovate-ai.svg",
-    location: "San Francisco, CA",
-    industry: "Artificial Intelligence",
-    description: "We're revolutionizing the way businesses leverage AI technology. Our platform helps companies implement AI solutions efficiently and ethically.",
-    techStack: ["Python", "TensorFlow", "React", "AWS"],
-    matchPercentage: 85,
-    culture: {
-      worklife: "Flexible remote-first culture with emphasis on work-life balance",
-      values: ["Innovation", "Ethics", "Collaboration", "Growth"],
-      benefits: ["Unlimited PTO", "Health Insurance", "Learning Budget", "Stock Options"]
-    },
-    teamHighlights: [
-      {
-        name: "John Smith",
-        role: "Tech Lead",
-        image: "/team/john-smith.jpg",
-        quote: "The best part about working here is the freedom to innovate and experiment."
-      },
-      {
-        name: "Emily Wang",
-        role: "Senior Developer",
-        image: "/team/emily-wang.jpg",
-        quote: "We have a great mentorship culture and everyone is always willing to help."
-      }
-    ],
-    socialLinks: {
-      linkedin: "https://linkedin.com/company/innovate-ai",
-      twitter: "https://twitter.com/innovateai",
-      website: "https://innovate-ai.com"
-    }
-  }
-];
-
-export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+export default function SwipeCard({ type, onSwipe, profile }: SwipeCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const controls = useAnimation();
-
-  const currentProfile = type === 'job' ? sampleCompanies[currentIndex] : sampleCandidates[currentIndex];
 
   const handleDragEnd = async (event: any, info: PanInfo) => {
     const swipe = info.offset.x;
@@ -97,14 +26,11 @@ export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
         transition: { duration: 0.2 }
       });
       onSwipe(swipe > 0 ? 'right' : 'left');
-      setCurrentIndex((prev) => (prev + 1) % (type === 'job' ? sampleCompanies.length : sampleCandidates.length));
       controls.set({ x: 0, opacity: 1 });
     } else {
       controls.start({ x: 0, opacity: 1 });
     }
   };
-
-  if (!currentProfile) return null;
 
   return (
     <motion.div
@@ -117,49 +43,49 @@ export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
       }`}
     >
       <div className="relative h-48 bg-gradient-to-b from-gray-700 to-gray-800">
-        {type === 'candidate' && (currentProfile as CandidateProfile).videoIntro && (
+        {type === 'candidate' && (profile as CandidateProfile).videoIntro && (
           <div className="absolute inset-0 flex items-center justify-center">
             <video
               className="w-full h-full object-cover"
-              poster={(currentProfile as CandidateProfile).videoIntro?.thumbnail}
+              poster={(profile as CandidateProfile).videoIntro?.thumbnail}
               controls
             >
-              <source src={(currentProfile as CandidateProfile).videoIntro?.url} type="video/mp4" />
+              <source src={(profile as CandidateProfile).videoIntro?.url} type="video/mp4" />
             </video>
           </div>
         )}
         <img
-          src={type === 'job' ? (currentProfile as CompanyProfile).logo : (currentProfile as CandidateProfile).avatar}
-          alt={currentProfile.name}
+          src={type === 'job' ? (profile as CompanyProfile).logo : (profile as CandidateProfile).avatar}
+          alt={profile.name}
           className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-24 h-24 rounded-full border-4 border-gray-800"
         />
       </div>
 
       <div className="px-6 pt-16 pb-4">
-        <h2 className="text-2xl font-bold text-center mb-1">{currentProfile.name}</h2>
+        <h2 className="text-2xl font-bold text-center mb-1">{profile.name}</h2>
         <p className="text-gray-400 text-center mb-4">
-          {type === 'job' ? (currentProfile as CompanyProfile).industry : (currentProfile as CandidateProfile).title}
+          {type === 'job' ? (profile as CompanyProfile).industry : (profile as CandidateProfile).title}
         </p>
-        <p className="text-gray-300 text-center mb-4">{currentProfile.location}</p>
+        <p className="text-gray-300 text-center mb-4">{profile.location}</p>
 
         <div className="flex justify-center space-x-4 mb-4">
-          {currentProfile.socialLinks?.github && (
-            <a href={currentProfile.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+          {profile.socialLinks?.github && (
+            <a href={profile.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
               <FiGithub className="w-6 h-6" />
             </a>
           )}
-          {currentProfile.socialLinks?.linkedin && (
-            <a href={currentProfile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+          {profile.socialLinks?.linkedin && (
+            <a href={profile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
               <FiLinkedin className="w-6 h-6" />
             </a>
           )}
-          {currentProfile.socialLinks?.twitter && (
-            <a href={currentProfile.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+          {profile.socialLinks?.twitter && (
+            <a href={profile.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
               <FiTwitter className="w-6 h-6" />
             </a>
           )}
-          {currentProfile.socialLinks?.website && (
-            <a href={currentProfile.socialLinks.website} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+          {profile.socialLinks?.website && (
+            <a href={profile.socialLinks.website} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
               <FiGlobe className="w-6 h-6" />
             </a>
           )}
@@ -181,8 +107,8 @@ export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
           >
             <p className="text-gray-300 mb-4">
               {type === 'job' 
-                ? (currentProfile as CompanyProfile).description 
-                : (currentProfile as CandidateProfile).bio
+                ? (profile as CompanyProfile).description 
+                : (profile as CandidateProfile).bio
               }
             </p>
 
@@ -190,18 +116,18 @@ export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
               <>
                 <h3 className="text-lg font-semibold mb-2">Skills</h3>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {(currentProfile as CandidateProfile).skills.map((skill) => (
+                  {(profile as CandidateProfile).skills.map((skill) => (
                     <span key={skill} className="bg-gray-700 px-3 py-1 rounded-full text-sm">
                       {skill}
                     </span>
                   ))}
                 </div>
 
-                {(currentProfile as CandidateProfile).resume && (
+                {(profile as CandidateProfile).resume && (
                   <div className="mt-4">
                     <h3 className="text-lg font-semibold mb-2">Resume</h3>
                     <a 
-                      href={(currentProfile as CandidateProfile).resume!.url}
+                      href={(profile as CandidateProfile).resume!.url}
                       download
                       className="flex items-center space-x-2 text-blue-400 hover:text-blue-300"
                     >
@@ -211,10 +137,10 @@ export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
                   </div>
                 )}
 
-                {(currentProfile as CandidateProfile).projects && (
+                {(profile as CandidateProfile).projects && (
                   <div className="mt-4">
                     <h3 className="text-lg font-semibold mb-2">Projects</h3>
-                    {(currentProfile as CandidateProfile).projects?.map((project) => (
+                    {(profile as CandidateProfile).projects?.map((project) => (
                       <div key={project.name} className="mb-4">
                         <h4 className="font-medium">{project.name}</h4>
                         <p className="text-gray-400">{project.description}</p>
@@ -232,10 +158,10 @@ export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
               </>
             )}
 
-            {type === 'job' && (currentProfile as CompanyProfile).teamHighlights && (
+            {type === 'job' && (profile as CompanyProfile).teamHighlights && (
               <div className="mt-4">
                 <h3 className="text-lg font-semibold mb-2">Team Highlights</h3>
-                {(currentProfile as CompanyProfile).teamHighlights?.map((member) => (
+                {(profile as CompanyProfile).teamHighlights?.map((member) => (
                   <div key={member.name} className="flex items-center space-x-4 mb-4">
                     <img src={member.image} alt={member.name} className="w-12 h-12 rounded-full" />
                     <div>

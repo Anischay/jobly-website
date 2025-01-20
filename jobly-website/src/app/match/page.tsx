@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import SwipeCard from '@/components/ui/SwipeCard';
-import TutorialOverlay from '@/components/ui/TutorialOverlay';
+import SwipeCard from '../../components/ui/SwipeCard';
 import { FiToggleLeft, FiToggleRight, FiBell } from 'react-icons/fi';
+import { CandidateProfile, CompanyProfile } from '../../types/profile';
 import type { JobData, CandidateData } from '@/components/ui/SwipeCard';
 
 // Sample data
