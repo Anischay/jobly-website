@@ -5,16 +5,14 @@ export interface VideoIntro {
 
 export interface Resume {
   url: string;
-  fileName: string;
+  preview?: string;
 }
 
 export interface Project {
-  id: string;
-  title: string;
+  name: string;
   description: string;
   technologies: string[];
-  liveUrl?: string;
-  githubUrl?: string;
+  link?: string;
 }
 
 export interface WorkExperience {
@@ -25,10 +23,10 @@ export interface WorkExperience {
 }
 
 export interface SocialLinks {
-  linkedin?: string;
   github?: string;
+  linkedin?: string;
   twitter?: string;
-  portfolio?: string;
+  website?: string;
 }
 
 export interface CandidateProfile {
@@ -38,7 +36,6 @@ export interface CandidateProfile {
   location: string;
   bio: string;
   skills: string[];
-  matchPercentage: number;
   videoIntro?: VideoIntro;
   resume?: Resume;
   projects?: Project[];
@@ -55,7 +52,7 @@ export interface CompanyCulture {
 export interface TeamMember {
   name: string;
   role: string;
-  image?: string;
+  image: string;
   quote: string;
 }
 

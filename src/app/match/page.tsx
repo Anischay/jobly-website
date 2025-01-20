@@ -1,6 +1,10 @@
 'use client';
 
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import SwipeCard from '../../../components/ui/SwipeCard';
+import { FiToggleLeft, FiToggleRight, FiBell } from 'react-icons/fi';
+import type { JobData, CandidateData } from '../../../components/ui/SwipeCard';
 
 export default function MatchPage() {
   return (

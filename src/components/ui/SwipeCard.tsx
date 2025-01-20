@@ -7,305 +7,246 @@ import { CandidateProfile, CompanyProfile } from '../../types/profile';
 import PDFViewer from './PDFViewer';
 
 interface SwipeCardProps {
-  data: CandidateProfile | CompanyProfile;
+  type: 'job' | 'candidate';
   onSwipe: (direction: 'left' | 'right') => void;
-  perspective: 'recruiter' | 'company';
 }
 
-export default function SwipeCard({ data, onSwipe, perspective }: SwipeCardProps) {
+const sampleCandidates: CandidateProfile[] = [
+  {
+    name: "Sarah Chen",
+    title: "Senior Full Stack Developer",
+    avatar: "/avatars/sarah.jpg",
+    location: "San Francisco, CA",
+    bio: "Passionate about building scalable web applications with modern technologies. 8+ years of experience in full-stack development.",
+    skills: ["React", "Node.js", "TypeScript", "AWS", "MongoDB", "GraphQL"],
+    videoIntro: {
+      url: "/videos/sarah-intro.mp4",
+      thumbnail: "/videos/sarah-thumbnail.jpg"
+    },
+    resume: {
+      url: "/resumes/sarah-chen-resume.pdf",
+      preview: "/resumes/sarah-chen-preview.jpg"
+    },
+    projects: [
+      {
+        name: "E-commerce Platform",
+        description: "Built a scalable e-commerce platform serving 100k+ monthly users",
+        technologies: ["Next.js", "Node.js", "PostgreSQL"],
+        link: "https://github.com/sarahchen/ecommerce"
+      }
+    ],
+    socialLinks: {
+      github: "https://github.com/sarahchen",
+      linkedin: "https://linkedin.com/in/sarahchen",
+      twitter: "https://twitter.com/sarahchen",
+      website: "https://sarahchen.dev"
+    }
+  }
+];
+
+const sampleCompanies: CompanyProfile[] = [
+  {
+    name: "Innovate AI",
+    logo: "/logos/innovate-ai.svg",
+    location: "San Francisco, CA",
+    industry: "Artificial Intelligence",
+    description: "We're revolutionizing the way businesses leverage AI technology. Our platform helps companies implement AI solutions efficiently and ethically.",
+    teamHighlights: [
+      {
+        name: "John Smith",
+        role: "Tech Lead",
+        image: "/team/john-smith.jpg",
+        quote: "The best part about working here is the freedom to innovate and experiment."
+      },
+      {
+        name: "Emily Wang",
+        role: "Senior Developer",
+        image: "/team/emily-wang.jpg",
+        quote: "We have a great mentorship culture and everyone is always willing to help."
+      }
+    ],
+    socialLinks: {
+      linkedin: "https://linkedin.com/company/innovate-ai",
+      twitter: "https://twitter.com/innovateai",
+      website: "https://innovate-ai.com"
+    }
+  }
+];
+
+export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showResume, setShowResume] = useState(false);
   const controls = useAnimation();
 
-  const handleDragEnd = async (_: any, info: PanInfo) => {
-    const swipeThreshold = 100;
-    if (Math.abs(info.offset.x) > swipeThreshold) {
-      const direction = info.offset.x > 0 ? 'right' : 'left';
+  const currentProfile = type === 'job' ? sampleCompanies[currentIndex] : sampleCandidates[currentIndex];
+
+  const handleDragEnd = async (event: any, info: PanInfo) => {
+    const swipe = info.offset.x;
+    const threshold = 100;
+
+    if (Math.abs(swipe) > threshold) {
       await controls.start({
-        x: direction === 'right' ? 200 : -200,
+        x: swipe * 2,
         opacity: 0,
-        transition: { duration: 0.3 }
+        transition: { duration: 0.2 }
       });
-      onSwipe(direction);
+      onSwipe(swipe > 0 ? 'right' : 'left');
+      setCurrentIndex((prev) => (prev + 1) % (type === 'job' ? sampleCompanies.length : sampleCandidates.length));
+      controls.set({ x: 0, opacity: 1 });
     } else {
-      controls.start({ x: 0, transition: { type: 'spring' } });
+      controls.start({ x: 0, opacity: 1 });
     }
   };
 
-  const isCandidate = 'videoIntro' in data;
-  const candidateData = isCandidate ? data as CandidateProfile : null;
+  if (!currentProfile) return null;
 
   return (
-    <>
-      <motion.div
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        onDragEnd={handleDragEnd}
-        animate={controls}
-        className={`w-full max-w-lg mx-auto bg-white/10 backdrop-blur-xl rounded-3xl overflow-hidden shadow-xl
-                    ${isExpanded ? 'min-h-[500px]' : 'h-[500px]'} transition-all duration-500`}
-      >
-        {/* Main Card Content */}
-        <div className="relative p-6 mt-16">
-          <div className="absolute top-4 right-4 flex items-center gap-2">
-            {candidateData?.resume && (
-              <button
-                onClick={() => setShowResume(true)}
-                className="bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 p-2 rounded-full transition-colors"
-                title="View Resume"
-              >
-                <FiFileText size={20} />
-              </button>
-            )}
-            <div className="bg-violet-500/20 px-3 py-1 rounded-full">
-              <span className="text-violet-200 font-medium">{data.matchPercentage}% Match</span>
-            </div>
+    <motion.div
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      onDragEnd={handleDragEnd}
+      animate={controls}
+      className={`bg-gray-800 rounded-xl overflow-hidden shadow-xl transition-all duration-300 ${
+        isExpanded ? 'min-h-[500px]' : 'h-[400px]'
+      }`}
+    >
+      <div className="relative h-48 bg-gradient-to-b from-gray-700 to-gray-800">
+        {type === 'candidate' && (currentProfile as CandidateProfile).videoIntro && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <video
+              className="w-full h-full object-cover"
+              poster={(currentProfile as CandidateProfile).videoIntro?.thumbnail}
+              controls
+            >
+              <source src={(currentProfile as CandidateProfile).videoIntro?.url} type="video/mp4" />
+            </video>
           </div>
+        )}
+        <img
+          src={type === 'job' ? (currentProfile as CompanyProfile).logo : (currentProfile as CandidateProfile).avatar}
+          alt={currentProfile.name}
+          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-24 h-24 rounded-full border-4 border-gray-800"
+        />
+      </div>
 
-          <div className="flex items-center gap-4 mb-6">
-            <img
-              src={isCandidate ? (data as CandidateProfile).avatar : (data as CompanyProfile).logo}
-              alt={data.name}
-              className="w-20 h-20 rounded-2xl object-cover"
-            />
-            <div>
-              <h3 className="text-xl font-semibold text-white">{data.name}</h3>
-              <p className="text-gray-400">
-                {isCandidate ? (data as CandidateProfile).title : (data as CompanyProfile).industry}
-              </p>
-              <p className="text-gray-500">{data.location}</p>
-            </div>
-          </div>
+      <div className="px-6 pt-16 pb-4">
+        <h2 className="text-2xl font-bold text-center mb-1">{currentProfile.name}</h2>
+        <p className="text-gray-400 text-center mb-4">
+          {type === 'job' ? (currentProfile as CompanyProfile).industry : (currentProfile as CandidateProfile).title}
+        </p>
+        <p className="text-gray-300 text-center mb-4">{currentProfile.location}</p>
 
-          <p className="text-gray-300 mb-6">{isCandidate ? (data as CandidateProfile).bio : (data as CompanyProfile).description}</p>
-
-          {/* Skills/Tech Stack */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {(isCandidate ? (data as CandidateProfile).skills : (data as CompanyProfile).techStack)?.map((skill, index) => (
-              <span
-                key={index}
-                className="bg-violet-500/20 text-violet-200 px-3 py-1 rounded-full text-sm"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-
-          {/* Expand/Collapse Button */}
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex items-center gap-2 text-violet-400 hover:text-violet-300 transition-colors"
-          >
-            {isExpanded ? (
-              <>
-                Show Less <FiChevronUp />
-              </>
-            ) : (
-              <>
-                Show More <FiChevronDown />
-              </>
-            )}
-          </button>
-
-          {/* Video Intro */}
-          {(data as CandidateProfile).videoIntro && (
-            <div className="rounded-xl overflow-hidden relative z-50">
-              <video
-                src={(data as CandidateProfile).videoIntro?.url}
-                poster={(data as CandidateProfile).videoIntro?.thumbnail}
-                controls
-                className="w-full"
-              />
-            </div>
+        <div className="flex justify-center space-x-4 mb-4">
+          {currentProfile.socialLinks?.github && (
+            <a href={currentProfile.socialLinks.github} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+              <FiGithub className="w-6 h-6" />
+            </a>
+          )}
+          {currentProfile.socialLinks?.linkedin && (
+            <a href={currentProfile.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+              <FiLinkedin className="w-6 h-6" />
+            </a>
+          )}
+          {currentProfile.socialLinks?.twitter && (
+            <a href={currentProfile.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+              <FiTwitter className="w-6 h-6" />
+            </a>
+          )}
+          {currentProfile.socialLinks?.website && (
+            <a href={currentProfile.socialLinks.website} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">
+              <FiGlobe className="w-6 h-6" />
+            </a>
           )}
         </div>
 
-        {/* Expanded Content */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-center text-gray-400 hover:text-white"
+        >
+          {isExpanded ? <FiChevronUp className="w-6 h-6" /> : <FiChevronDown className="w-6 h-6" />}
+        </button>
+
         {isExpanded && (
-          <div className="p-6 border-t border-white/10">
-            {isCandidate ? (
-              // Candidate Expanded Content
-              <div className="space-y-8">
-                {/* Video Intro */}
-                {(data as CandidateProfile).videoIntro && (
-                  <div className="rounded-xl overflow-hidden relative z-10">
-                    <video
-                      src={(data as CandidateProfile).videoIntro?.url}
-                      poster={(data as CandidateProfile).videoIntro?.thumbnail}
-                      controls
-                      className="w-full"
-                    />
-                  </div>
-                )}
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-4"
+          >
+            <p className="text-gray-300 mb-4">{currentProfile.description || (currentProfile as CandidateProfile).bio}</p>
 
-                {/* Projects */}
-                {(data as CandidateProfile).projects && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-4">Projects</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {(data as CandidateProfile).projects?.map(project => (
-                        <div key={project.id} className="bg-white/5 rounded-xl p-4">
-                          <h5 className="font-medium text-white mb-2">{project.title}</h5>
-                          <p className="text-gray-400 text-sm mb-3">{project.description}</p>
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            {project.technologies.map((tech, index) => (
-                              <span key={index} className="text-xs text-violet-300">
-                                {tech}
-                              </span>
-                            ))}
-                          </div>
-                          <div className="flex gap-3">
-                            {project.liveUrl && (
-                              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" 
-                                 className="text-violet-400 hover:text-violet-300">
-                                <FiGlobe />
-                              </a>
-                            )}
-                            {project.githubUrl && (
-                              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
-                                 className="text-violet-400 hover:text-violet-300">
-                                <FiGithub />
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Work Experience */}
-                {(data as CandidateProfile).workExperience && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-4">Experience</h4>
-                    <div className="space-y-4">
-                      {(data as CandidateProfile).workExperience?.map((work, index) => (
-                        <div key={index} className="bg-white/5 rounded-xl p-4">
-                          <h5 className="font-medium text-white">{work.role}</h5>
-                          <p className="text-violet-400">{work.company}</p>
-                          <p className="text-gray-500 text-sm">{work.duration}</p>
-                          <p className="text-gray-400 mt-2">{work.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              // Company Expanded Content
-              <div className="space-y-8">
-                {/* Culture */}
-                <div>
-                  <h4 className="text-lg font-semibold text-white mb-4">Company Culture</h4>
-                  <div className="bg-white/5 rounded-xl p-4">
-                    <p className="text-gray-300 mb-4">{(data as CompanyProfile).culture.worklife}</p>
-                    <div className="space-y-4">
-                      <div>
-                        <h5 className="font-medium text-white mb-2">Values</h5>
-                        <div className="flex flex-wrap gap-2">
-                          {(data as CompanyProfile).culture.values.map((value, index) => (
-                            <span key={index} className="bg-violet-500/20 text-violet-200 px-3 py-1 rounded-full text-sm">
-                              {value}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <h5 className="font-medium text-white mb-2">Benefits</h5>
-                        <div className="flex flex-wrap gap-2">
-                          {(data as CompanyProfile).culture.benefits.map((benefit, index) => (
-                            <span key={index} className="bg-violet-500/20 text-violet-200 px-3 py-1 rounded-full text-sm">
-                              {benefit}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            {type === 'candidate' && (
+              <>
+                <h3 className="text-lg font-semibold mb-2">Skills</h3>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {(currentProfile as CandidateProfile).skills.map((skill) => (
+                    <span key={skill} className="bg-gray-700 px-3 py-1 rounded-full text-sm">
+                      {skill}
+                    </span>
+                  ))}
                 </div>
 
-                {/* Team Highlights */}
-                {(data as CompanyProfile).teamHighlights && (
-                  <div>
-                    <h4 className="text-lg font-semibold text-white mb-4">Meet the Team</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {(data as CompanyProfile).teamHighlights?.map((member, index) => (
-                        <div key={index} className="bg-white/5 rounded-xl p-4">
-                          <div className="flex items-center gap-3 mb-3">
-                            {member.image && (
-                              <img src={member.image} alt={member.name} className="w-12 h-12 rounded-full" />
-                            )}
-                            <div>
-                              <h5 className="font-medium text-white">{member.name}</h5>
-                              <p className="text-gray-400 text-sm">{member.role}</p>
-                            </div>
-                          </div>
-                          <p className="text-gray-300 italic">"{member.quote}"</p>
-                        </div>
-                      ))}
-                    </div>
+                {(currentProfile as CandidateProfile).resume && (
+                  <div className="mt-4">
+                    <h3 className="text-lg font-semibold mb-2">Resume</h3>
+                    <PDFViewer url={(currentProfile as CandidateProfile).resume!.url} />
                   </div>
                 )}
-              </div>
+
+                {(currentProfile as CandidateProfile).projects && (
+                  <div className="mt-4">
+                    <h3 className="text-lg font-semibold mb-2">Projects</h3>
+                    {(currentProfile as CandidateProfile).projects.map((project) => (
+                      <div key={project.name} className="mb-4">
+                        <h4 className="font-medium">{project.name}</h4>
+                        <p className="text-gray-400">{project.description}</p>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {project.technologies.map((tech) => (
+                            <span key={tech} className="bg-gray-700 px-2 py-0.5 rounded text-xs">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
 
-            {/* Social Links */}
-            {data.socialLinks && (
-              <div className="flex gap-4 mt-6 pt-6 border-t border-white/10">
-                {data.socialLinks.linkedin && (
-                  <a href={data.socialLinks.linkedin} target="_blank" rel="noopener noreferrer"
-                     className="text-violet-400 hover:text-violet-300">
-                    <FiLinkedin size={20} />
-                  </a>
-                )}
-                {data.socialLinks.github && (
-                  <a href={data.socialLinks.github} target="_blank" rel="noopener noreferrer"
-                     className="text-violet-400 hover:text-violet-300">
-                    <FiGithub size={20} />
-                  </a>
-                )}
-                {data.socialLinks.twitter && (
-                  <a href={data.socialLinks.twitter} target="_blank" rel="noopener noreferrer"
-                     className="text-violet-400 hover:text-violet-300">
-                    <FiTwitter size={20} />
-                  </a>
-                )}
-                {data.socialLinks.portfolio && (
-                  <a href={data.socialLinks.portfolio} target="_blank" rel="noopener noreferrer"
-                     className="text-violet-400 hover:text-violet-300">
-                    <FiGlobe size={20} />
-                  </a>
-                )}
+            {type === 'job' && (currentProfile as CompanyProfile).teamHighlights && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold mb-2">Team Highlights</h3>
+                {(currentProfile as CompanyProfile).teamHighlights.map((member) => (
+                  <div key={member.name} className="flex items-center space-x-4 mb-4">
+                    <img src={member.image} alt={member.name} className="w-12 h-12 rounded-full" />
+                    <div>
+                      <h4 className="font-medium">{member.name}</h4>
+                      <p className="text-gray-400 text-sm">{member.role}</p>
+                      <p className="text-gray-300 text-sm italic mt-1">"{member.quote}"</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
-          </div>
+          </motion.div>
         )}
+      </div>
 
-        {/* Swipe Actions */}
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-4">
-          <button
-            onClick={() => onSwipe('left')}
-            className="bg-red-500/20 hover:bg-red-500/30 text-red-500 p-4 rounded-full transition-colors"
-          >
-            <FiX size={24} />
-          </button>
-          <button
-            onClick={() => onSwipe('right')}
-            className="bg-green-500/20 hover:bg-green-500/30 text-green-500 p-4 rounded-full transition-colors"
-          >
-            <FiCheck size={24} />
-          </button>
-        </div>
-      </motion.div>
-
-      {/* PDF Viewer Modal */}
-      {showResume && candidateData?.resume && (
-        <PDFViewer
-          url={candidateData.resume.url}
-          fileName={candidateData.resume.fileName}
-          onClose={() => setShowResume(false)}
-        />
-      )}
-    </>
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-4">
+        <button
+          onClick={() => onSwipe('left')}
+          className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-full"
+        >
+          <FiX className="w-6 h-6" />
+        </button>
+        <button
+          onClick={() => onSwipe('right')}
+          className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full"
+        >
+          <FiCheck className="w-6 h-6" />
+        </button>
+      </div>
+    </motion.div>
   );
 } 
