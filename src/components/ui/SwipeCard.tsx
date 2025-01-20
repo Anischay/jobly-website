@@ -51,6 +51,13 @@ const sampleCompanies: CompanyProfile[] = [
     location: "San Francisco, CA",
     industry: "Artificial Intelligence",
     description: "We're revolutionizing the way businesses leverage AI technology. Our platform helps companies implement AI solutions efficiently and ethically.",
+    techStack: ["Python", "TensorFlow", "React", "AWS"],
+    matchPercentage: 85,
+    culture: {
+      worklife: "Flexible remote-first culture with emphasis on work-life balance",
+      values: ["Innovation", "Ethics", "Collaboration", "Growth"],
+      benefits: ["Unlimited PTO", "Health Insurance", "Learning Budget", "Stock Options"]
+    },
     teamHighlights: [
       {
         name: "John Smith",
@@ -173,7 +180,12 @@ export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
             exit={{ opacity: 0, height: 0 }}
             className="mt-4"
           >
-            <p className="text-gray-300 mb-4">{currentProfile.description || (currentProfile as CandidateProfile).bio}</p>
+            <p className="text-gray-300 mb-4">
+              {type === 'job' 
+                ? (currentProfile as CompanyProfile).description 
+                : (currentProfile as CandidateProfile).bio
+              }
+            </p>
 
             {type === 'candidate' && (
               <>
@@ -189,14 +201,18 @@ export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
                 {(currentProfile as CandidateProfile).resume && (
                   <div className="mt-4">
                     <h3 className="text-lg font-semibold mb-2">Resume</h3>
-                    <PDFViewer url={(currentProfile as CandidateProfile).resume!.url} />
+                    <PDFViewer 
+                      url={(currentProfile as CandidateProfile).resume!.url}
+                      fileName="resume.pdf"
+                      onClose={() => {}}
+                    />
                   </div>
                 )}
 
                 {(currentProfile as CandidateProfile).projects && (
                   <div className="mt-4">
                     <h3 className="text-lg font-semibold mb-2">Projects</h3>
-                    {(currentProfile as CandidateProfile).projects.map((project) => (
+                    {(currentProfile as CandidateProfile).projects?.map((project) => (
                       <div key={project.name} className="mb-4">
                         <h4 className="font-medium">{project.name}</h4>
                         <p className="text-gray-400">{project.description}</p>
@@ -217,7 +233,7 @@ export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
             {type === 'job' && (currentProfile as CompanyProfile).teamHighlights && (
               <div className="mt-4">
                 <h3 className="text-lg font-semibold mb-2">Team Highlights</h3>
-                {(currentProfile as CompanyProfile).teamHighlights.map((member) => (
+                {(currentProfile as CompanyProfile).teamHighlights?.map((member) => (
                   <div key={member.name} className="flex items-center space-x-4 mb-4">
                     <img src={member.image} alt={member.name} className="w-12 h-12 rounded-full" />
                     <div>
