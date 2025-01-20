@@ -2,9 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, PanInfo, useAnimation } from 'framer-motion';
-import { FiX, FiCheck, FiChevronDown, FiChevronUp, FiGithub, FiLinkedin, FiTwitter, FiGlobe, FiFileText } from 'react-icons/fi';
+import { FiX, FiCheck, FiChevronDown, FiChevronUp, FiGithub, FiLinkedin, FiTwitter, FiGlobe, FiFileText, FiDownload } from 'react-icons/fi';
 import { CandidateProfile, CompanyProfile } from '../../types/profile';
-import PDFViewer from './PDFViewer';
 
 interface SwipeCardProps {
   type: 'job' | 'candidate';
@@ -201,11 +200,14 @@ export default function SwipeCard({ type, onSwipe }: SwipeCardProps) {
                 {(currentProfile as CandidateProfile).resume && (
                   <div className="mt-4">
                     <h3 className="text-lg font-semibold mb-2">Resume</h3>
-                    <PDFViewer 
-                      url={(currentProfile as CandidateProfile).resume!.url}
-                      fileName="resume.pdf"
-                      onClose={() => {}}
-                    />
+                    <a 
+                      href={(currentProfile as CandidateProfile).resume!.url}
+                      download
+                      className="flex items-center space-x-2 text-blue-400 hover:text-blue-300"
+                    >
+                      <FiDownload className="w-5 h-5" />
+                      <span>Download Resume</span>
+                    </a>
                   </div>
                 )}
 
