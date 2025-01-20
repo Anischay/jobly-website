@@ -1,0 +1,14 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="100" y="100" width="80" height="100" rx="8" fill="url(#switch-gradient)" opacity="0.2"/>
+  <rect x="220" y="100" width="80" height="100" rx="8" fill="url(#switch-gradient)" opacity="0.2"/>
+  <path d="M140 150 L180 150 M160 130 L180 150 L160 170" stroke="url(#switch-gradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M260 150 L220 150 M240 130 L220 150 L240 170" stroke="url(#switch-gradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="140" y="220" text-anchor="middle" fill="url(#switch-gradient)" font-size="14">Recruiter</text>
+  <text x="260" y="220" text-anchor="middle" fill="url(#switch-gradient)" font-size="14">Job Seeker</text>
+  <defs>
+    <linearGradient id="switch-gradient" x1="0" y1="0" x2="400" y2="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+  </defs>
+</svg> 

@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --mesh-colors: #2563eb, #7C3AED, #06B6D4;
+    --mesh-size: 200px;
+    --mesh-strength: 50%;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply text-white bg-background min-h-screen antialiased;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-accent-purple to-accent-cyan;
+  }
+
+  .bg-mesh-gradient {
+    @apply relative overflow-hidden;
+    background: linear-gradient(
+      to bottom right,
+      var(--mesh-colors)
+    );
+    background-size: var(--mesh-size) var(--mesh-size);
+    animation: meshGradient 10s ease infinite alternate;
+  }
+
+  .bg-glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+
+  .bg-glass-gradient {
+    @apply bg-glass;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+  }
+
+  .bg-grid {
+    background-size: 50px 50px;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
+
+  .mask-radial-faded {
+    mask-image: radial-gradient(circle at center, black, transparent 80%);
+  }
+
+  .mask-linear-faded {
+    mask-image: linear-gradient(black, transparent 70%);
+  }
+}
+
+@layer components {
+  .container {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .hero-text {
+    @apply text-4xl md:text-6xl lg:text-7xl font-bold;
+  }
+
+  .section-heading {
+    @apply text-3xl md:text-4xl font-bold text-gradient;
+  }
+
+  .card {
+    @apply bg-black/20 backdrop-blur-sm border border-white/10 rounded-xl p-8 hover:border-accent-purple/50 transition-colors;
+  }
+
+  .card-hover {
+    @apply hover:bg-black/30 hover:scale-105 transition-all duration-300;
+  }
+
+  .button-primary {
+    @apply bg-accent-blue hover:bg-accent-blue/90 text-white px-6 py-3 rounded-full 
+           font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg 
+           hover:shadow-accent-blue/25 active:scale-95;
+  }
+
+  .button-gradient {
+    @apply bg-gradient-to-r from-accent-blue via-accent-purple to-accent-cyan 
+           hover:from-accent-blue/90 hover:via-accent-purple/90 hover:to-accent-cyan/90 
+           text-white px-6 py-3 rounded-full font-semibold transition-all duration-300 
+           hover:scale-105 hover:shadow-lg hover:shadow-accent-blue/25 active:scale-95;
+  }
+}

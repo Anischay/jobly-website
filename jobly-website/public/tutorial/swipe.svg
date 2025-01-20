@@ -1,0 +1,14 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="120" y="80" width="160" height="200" rx="12" fill="url(#swipe-gradient)" opacity="0.2"/>
+  <path d="M160 180 L200 180 M180 160 L200 180 L180 200" stroke="#EC4899" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M240 180 L200 180 M220 160 L200 180 L220 200" stroke="#10B981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="160" y="140" text-anchor="middle" fill="#EC4899" font-size="14">Skip</text>
+  <text x="240" y="140" text-anchor="middle" fill="#10B981" font-size="14">Like</text>
+  <path d="M120 120 L280 120" stroke="url(#swipe-gradient)" stroke-width="2" stroke-dasharray="4 4"/>
+  <defs>
+    <linearGradient id="swipe-gradient" x1="0" y1="0" x2="400" y2="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+  </defs>
+</svg> 
