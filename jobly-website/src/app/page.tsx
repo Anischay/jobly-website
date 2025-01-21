@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import CountdownTimer from '@/components/CountdownTimer';
+import CountdownTimer from '../components/CountdownTimer';
 
 const features = [
   {
