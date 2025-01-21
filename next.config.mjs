@@ -10,10 +10,15 @@ const nextConfig = {
     ],
   },
   typescript: {
+    // Temporarily disable type checking during build
     ignoreBuildErrors: true
   },
   eslint: {
     ignoreDuringBuilds: true
+  },
+  webpack: (config) => {
+    config.resolve.extensions = ['.ts', '.tsx', '.js', '.jsx', ...config.resolve.extensions];
+    return config;
   }
 };
 

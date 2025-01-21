@@ -1,8 +1,9 @@
 import React from 'react';
-import { motion, PanInfo } from 'framer-motion';
-import { Job, Candidate } from '@/types';
+import { motion, useAnimation, PanInfo } from 'framer-motion';
+import { Job, Candidate } from '../../types';
 import Image from 'next/image';
 import { FaMapMarkerAlt, FaBriefcase, FaGraduationCap, FaCode } from 'react-icons/fa';
+import { FiX, FiCheck } from 'react-icons/fi';
 
 interface SwipeCardProps {
   item: Job | Candidate;
