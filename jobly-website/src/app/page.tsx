@@ -136,7 +136,7 @@ export default function Home() {
           >
             <h2 className="section-heading">Our Mission</h2>
             <p className="text-xl text-white/80">
-              We're revolutionizing the recruitment industry by bringing together 
+              We&apos;re revolutionizing the recruitment industry by bringing together 
               cutting-edge AI technology with a human-centric approach. Our goal is 
               to create perfect matches between talented individuals and forward-thinking 
               companies, making the hiring process more efficient, enjoyable, and successful 

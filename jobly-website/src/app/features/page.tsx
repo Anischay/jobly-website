@@ -6,7 +6,7 @@ import { FiArrowRight, FiHeart, FiX } from 'react-icons/fi';
 const features = [
   {
     title: 'Swipe Right on Talent',
-    description: 'Experience recruitment like modern dating - swipe right on candidates you love, left on those that don\'t match. No more endless resume scrolling.',
+    description: 'Experience recruitment like modern dating - swipe right on candidates you love, left on those that don&apos;t match. No more endless resume scrolling.',
     icon: '💫',
     benefits: [
       'Intuitive card-based interface',
@@ -68,7 +68,7 @@ export default function FeaturesPage() {
               Recruitment, But Make It Fun
             </h1>
             <p className="text-xl md:text-2xl text-white/80">
-              Swipe right on your next hire or dream job. We've reimagined recruitment 
+              Swipe right on your next hire or dream job. We&apos;ve reimagined recruitment 
               with a modern, engaging approach that makes hiring feel less like work.
             </p>
           </motion.div>
