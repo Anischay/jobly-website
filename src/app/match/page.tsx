@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SwipeCard from '../../components/ui/SwipeCard';
-import { FiToggleLeft, FiToggleRight, FiBell } from 'react-icons/fi';
-import type { CandidateProfile, CompanyProfile } from '@/types';
+import FilterPanel, { FilterOptions } from '../../components/ui/FilterPanel';
+import { FiToggleLeft, FiToggleRight, FiBell, FiFilter } from 'react-icons/fi';
+import type { CandidateProfile, CompanyProfile } from '../../types/profile';
 
 const sampleCandidates: CandidateProfile[] = [
   {
@@ -79,11 +80,56 @@ const sampleCompanies: CompanyProfile[] = [
 export default function MatchPage() {
   const [showingJobs, setShowingJobs] = useState(true);
   const [notifications, setNotifications] = useState<string[]>([]);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<FilterOptions | null>(null);
+  const [filteredProfiles, setFilteredProfiles] = useState({
+    candidates: sampleCandidates,
+    companies: sampleCompanies,
+  });
+
+  const handleApplyFilters = (filters: FilterOptions) => {
+    setActiveFilters(filters);
+    
+    // Filter candidates
+    const filteredCandidates = sampleCandidates.filter(candidate => {
+      const locationMatch = !filters.location || 
+        candidate.location.toLowerCase().includes(filters.location.toLowerCase());
+      
+      const skillsMatch = filters.skills.length === 0 || 
+        filters.skills.every(skill => 
+          candidate.skills.some(s => s.toLowerCase().includes(skill.toLowerCase()))
+        );
+
+      // Add more filtering logic here
+
+      return locationMatch && skillsMatch;
+    });
+
+    // Filter companies
+    const filteredCompanies = sampleCompanies.filter(company => {
+      const locationMatch = !filters.location || 
+        company.location.toLowerCase().includes(filters.location.toLowerCase());
+      
+      const skillsMatch = filters.skills.length === 0 || 
+        filters.skills.every(skill => 
+          company.techStack.some(s => s.toLowerCase().includes(skill.toLowerCase()))
+        );
+
+      // Add more filtering logic here
+
+      return locationMatch && skillsMatch;
+    });
+
+    setFilteredProfiles({
+      candidates: filteredCandidates,
+      companies: filteredCompanies,
+    });
+  };
 
   const handleSwipe = (direction: 'left' | 'right') => {
     const message = direction === 'right' 
-      ? `You liked ${showingJobs ? sampleCompanies[0].name : sampleCandidates[0].name}!`
-      : `You passed on ${showingJobs ? sampleCompanies[0].name : sampleCandidates[0].name}`;
+      ? `You liked ${showingJobs ? filteredProfiles.companies[0].name : filteredProfiles.candidates[0].name}!`
+      : `You passed on ${showingJobs ? filteredProfiles.companies[0].name : filteredProfiles.candidates[0].name}`;
     
     setNotifications(prev => [...prev, message]);
     setTimeout(() => {
@@ -111,27 +157,63 @@ export default function MatchPage() {
               </>
             )}
           </button>
-          <button className="text-gray-400 hover:text-white transition-colors">
-            <FiBell className="w-6 h-6" />
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsFilterOpen(true)}
+              className={`text-gray-400 hover:text-white transition-colors ${activeFilters ? 'text-violet-500' : ''}`}
+            >
+              <FiFilter className="w-6 h-6" />
+            </button>
+            <button className="text-gray-400 hover:text-white transition-colors">
+              <FiBell className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
+        {/* No Results Message */}
+        {((showingJobs && filteredProfiles.companies.length === 0) || 
+          (!showingJobs && filteredProfiles.candidates.length === 0)) && (
+          <div className="text-center py-12">
+            <p className="text-gray-400 text-lg">
+              No matches found with current filters.
+              <button
+                onClick={() => setActiveFilters(null)}
+                className="text-violet-500 hover:text-violet-400 ml-2"
+              >
+                Clear filters
+              </button>
+            </p>
+          </div>
+        )}
+
+        {/* Cards */}
         <AnimatePresence mode="wait">
-          <motion.div
-            key={showingJobs ? 'jobs' : 'candidates'}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-            <SwipeCard
-              type={showingJobs ? 'job' : 'candidate'}
-              onSwipe={handleSwipe}
-              profile={showingJobs ? sampleCompanies[0] : sampleCandidates[0]}
-            />
-          </motion.div>
+          {((showingJobs && filteredProfiles.companies.length > 0) || 
+            (!showingJobs && filteredProfiles.candidates.length > 0)) && (
+            <motion.div
+              key={showingJobs ? 'jobs' : 'candidates'}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <SwipeCard
+                type={showingJobs ? 'job' : 'candidate'}
+                onSwipe={handleSwipe}
+                profile={showingJobs ? filteredProfiles.companies[0] : filteredProfiles.candidates[0]}
+              />
+            </motion.div>
+          )}
         </AnimatePresence>
 
+        {/* Filter Panel */}
+        <FilterPanel
+          isOpen={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+          onApplyFilters={handleApplyFilters}
+        />
+
+        {/* Notifications */}
         <AnimatePresence>
           {notifications.map((notification, index) => (
             <motion.div
@@ -139,7 +221,7 @@ export default function MatchPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow-lg"
+              className="fixed bottom-4 right-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-4 py-2 rounded-lg shadow-lg"
             >
               {notification}
             </motion.div>
