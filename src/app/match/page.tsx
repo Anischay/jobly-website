@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SwipeCard from '../../components/ui/SwipeCard';
 import { FiToggleLeft, FiToggleRight, FiBell } from 'react-icons/fi';
-import { CandidateProfile, CompanyProfile } from '../../types';
+import type { CandidateProfile, CompanyProfile } from '../../types/index';
 
 const sampleCandidates: CandidateProfile[] = [
   {
